@@ -1,5 +1,5 @@
-#ifndef WALL_AVOIDENCE_INO
-#define WALL_AVOIDENCE_INO
+#ifndef WALL_AVOIDANCE_INO
+#define WALL_AVOIDANCE_INO
 
 #include <MeOrion.h>
 
