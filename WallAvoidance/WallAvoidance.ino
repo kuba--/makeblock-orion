@@ -5,11 +5,8 @@
 
 #define MIN_DISTANCE_CM 15.0
 #define SPEED 150
-#define DELAY_MS 500
-#define LEFT 1
-#define RIGHT -1
 
-MeUltrasonicSensor d(PORT_3); // distance
+MeUltrasonicSensor sonar(PORT_3);
 MeDCMotor mL(M1);
 MeDCMotor mR(M2);
 
@@ -23,36 +20,27 @@ static void turn(uint8_t dir) {
   mR.run(dir * SPEED);
 }
 
-static double dist() {
-  double cm = d.distanceCm();
-  Serial.println(cm);
-  delay(100);
-  return cm;
-}
-
 static void avoid() {
-  static uint8_t lastdir = RIGHT;
-
-  uint8_t dir = random(RIGHT, LEFT);
+  uint8_t dir = random(0, 2);
   if (!dir)
-    dir = -lastdir;
+    dir = -1;
 
   turn(dir);
-  delay(DELAY_MS);
-
-  lastdir = dir;
 }
 
 void setup() {
-  Serial.begin(9600);
+  //Serial.begin(9600);
+  randomSeed(analogRead(0));
 }
 
 void loop() {
-  if (dist() < MIN_DISTANCE_CM) {
+  double d = sonar.distanceCm();
+  //Serial.println(d);
+  if (d < MIN_DISTANCE_CM)
     avoid();
-  }
+  else
+    fwd();
 
-  fwd();
+  delay(200);
 }
-
 #endif
