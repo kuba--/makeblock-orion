@@ -1,2 +1,2 @@
-# MeOrion
-Arduino scripts for Makeblock's MeOrion board.
+# Arduino
+Arduino Uno scripts for Makeblock's MeOrion board.
