@@ -5,6 +5,7 @@
 
 #define MIN_DISTANCE_CM 15.0
 #define SPEED 150
+#define DELAY_MS 300
 
 MeUltrasonicSensor sonar(PORT_3);
 MeDCMotor mL(M1);
@@ -36,11 +37,11 @@ void setup() {
 void loop() {
   double d = sonar.distanceCm();
   //Serial.println(d);
-  if (d < MIN_DISTANCE_CM)
+  if (d > 0.0 && d < MIN_DISTANCE_CM)
     avoid();
   else
     fwd();
 
-  delay(200);
+  delay(DELAY_MS);
 }
 #endif
