@@ -3,45 +3,108 @@
 
 #include <MeOrion.h>
 
+#define DEBUG 1
+
+#define MAX_SOUND_STRENGTH 512
 #define MIN_DISTANCE_CM 15.0
-#define SPEED 150
-#define DELAY_MS 300
+#define SPEED 160
+#define TURN_DELAY_MS 1000
+#define DEFAULT_DELAY_MS 200
 
-MeUltrasonicSensor sonar(PORT_3);
-MeDCMotor mL(M1);
-MeDCMotor mR(M2);
-
-static void fwd() {
-  mL.run(-SPEED);
-  mR.run(SPEED);
-}
-
-static void turn(uint8_t dir) {
-  mL.run(dir * SPEED);
-  mR.run(dir * SPEED);
-}
-
-static void avoid() {
-  uint8_t dir = random(0, 2);
-  if (!dir)
-    dir = -1;
-
-  turn(dir);
-}
+MeSoundSensor SoundSensor(PORT_7);
+MeRGBLed Led(PORT_4, SLOT_1, 15);
+MeUltrasonicSensor UltrasonicSensor(PORT_3);
+MeDCMotor MotorL(M1);
+MeDCMotor MotorR(M2);
+const int16_t Degrees[2] = { -90, 90 };
+const int16_t Noises[2] = { 150, 256 };
 
 void setup() {
-  //Serial.begin(9600);
+#ifdef DEBUG
+  Serial.begin(9600);
+#endif
+
   randomSeed(analogRead(0));
 }
 
 void loop() {
-  double d = sonar.distanceCm();
-  //Serial.println(d);
-  if (d > 0.0 && d < MIN_DISTANCE_CM)
-    avoid();
-  else
-    fwd();
 
-  delay(DELAY_MS);
+  int16_t strength = soundStrength();
+  setLed(strength);
+
+  double cm = distanceCm();
+  if (cm > 0.0 && cm < MIN_DISTANCE_CM)
+    turn(Degrees[random(0, 2)]);
+
+  moveForward();
+
+  delay(DEFAULT_DELAY_MS);
 }
+
+static int16_t soundStrength() {
+  int16_t strength = SoundSensor.strength();
+#ifdef DEBUG
+  Serial.print("sound.strength: ");
+  Serial.println(strength);
+#endif
+  return strength;
+}
+
+static void setLed(int16_t val) {
+  double f = 256.0;
+
+  if (val < Noises[0]) {
+    f /= Noises[0];
+
+    Led.setColor(0, 0, val * ceil(f));
+    Led.show();
+
+    return;
+  }
+
+  if (val < Noises[1]) {
+    val -= Noises[0];
+    f /= (Noises[1] - Noises[0]);
+
+    Led.setColor(0, val * ceil(f), 0);
+    Led.show();
+
+    return;
+  }
+
+  val -= Noises[1];
+  if (val < 1) val = 1;
+  if (val > 255) val = 255;
+
+  Led.setColor(val, 0, 0);
+  Led.show();
+}
+
+static double distanceCm() {
+  double cm = UltrasonicSensor.distanceCm();
+#ifdef DEBUG
+  Serial.print("distance cm: ");
+  Serial.println(cm);
+#endif
+  return cm;
+}
+
+// degrees: -180 to 180. Positive number for turning right, negative number for turning left.
+static void turn(int16_t degrees) {
+  if (degrees == 0) return;
+
+  byte dir = (degrees < 0) ? 1 : -1;
+  double ms = TURN_DELAY_MS * (abs(degrees) / 180.0);
+
+  MotorL.run(dir * SPEED);
+  MotorR.run(dir * SPEED);
+
+  delay(round(ms));
+}
+
+static void moveForward() {
+  MotorL.run(-SPEED);
+  MotorR.run(SPEED);
+}
+
 #endif
