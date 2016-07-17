@@ -11,9 +11,9 @@
 #define TURN_DELAY_MS 1000
 #define DEFAULT_DELAY_MS 200
 
-MeSoundSensor SoundSensor(PORT_7);
-MeRGBLed Led(PORT_4, SLOT_1, 15);
-MeUltrasonicSensor UltrasonicSensor(PORT_3);
+MeSoundSensor SoundSensor(PORT_8);
+MeRGBLed Led(PORT_3, SLOT_1, 15);
+MeUltrasonicSensor UltrasonicSensor(PORT_4);
 MeDCMotor MotorL(M1);
 MeDCMotor MotorR(M2);
 const int16_t Degrees[2] = { -90, 90 };

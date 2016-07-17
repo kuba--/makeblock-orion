@@ -3,7 +3,7 @@
 
 #include <MeOrion.h>
 
-#define DEBUG 1
+#define DEBUG 0
 
 #define MAX_SOUND_STRENGTH 550
 #define MIN_DISTANCE_CM 20.0
@@ -34,9 +34,9 @@ const int16_t Noises[2] = { 256, 512 };
 const Event Events[] = { onNoise, onWall, onState };
 const uint8_t NEvents =  sizeof(Events) / sizeof(Event);
 
-MeSoundSensor SoundSensor(PORT_7);
-MeRGBLed Led(PORT_4, SLOT_1, 15);
-MeUltrasonicSensor UltrasonicSensor(PORT_3);
+MeSoundSensor SoundSensor(PORT_8);
+MeRGBLed Led(PORT_3, SLOT_1, 15);
+MeUltrasonicSensor UltrasonicSensor(PORT_4);
 MeDCMotor MotorL(M1);
 MeDCMotor MotorR(M2);
 
@@ -155,12 +155,12 @@ void onWall() {
     return;
 
   double d = distanceCm();
-  if (d > MIN_DISTANCE_CM) {
-    State = GO;
-  } else {
+  if (d > 0.0 && d < MIN_DISTANCE_CM) {
     if (State != TURN)
       Direction = (0 == random(0, 2)) ? LEFT : RIGHT;
-    State = TURN;
+    State = TURN;    
+  } else {  
+    State = GO;
   }
 
   lastcall = now;
