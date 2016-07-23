@@ -4,36 +4,43 @@ ifeq ($(project),)
 	project = $(shell basename $(PWD))
 endif
 
-BUILD_DIR := /tmp/build-$(project)
-SRC = $(shell find $(project) -type f -name "*.ino")
+BUILD_DIR = /tmp/build-$(project)
+SRC = $(shell find $(project) -type f -name "*.ino" -print0 | xargs -0 -I {} echo "{}")
 
 ifeq ($(ARDUINO_LIBS),)
 	ARDUINO_LIBS := .
 endif
 
+#
+# require $ARDUINO_DIR
+#
 ARDUINO_FLAGS := -logger=machine -hardware $(ARDUINO_DIR)/hardware -tools $(ARDUINO_DIR)/tools-builder -tools $(ARDUINO_DIR)/hardware/tools/avr -built-in-libraries $(ARDUINO_DIR)/libraries -libraries $(ARDUINO_LIBS) -fqbn=arduino:avr:uno -ide-version=10609 -build-path $(BUILD_DIR) -warnings=default -prefs=build.warn_data_percentage=75 -verbose
 
-ifeq ($(AVRDUDE_CONF),)
-	AVRDUDE_CONF := $(ARDUINO_DIR)/hardware/tools/avr/etc/avrdude.conf
+ifneq ($(debug),)
+	ARDUINO_FLAGS += -debug-level=$(debug) -prefs compiler.cpp.extra_flags=-DDEBUG
 endif
 
-ifeq ($(AVRDUDE_PORT),)
-	AVRDUDE_PORT := /dev/cu.wchusbserial1410
+ifeq ($(ARDUINO_CONF),)
+	ARDUINO_CONF := $(ARDUINO_DIR)/hardware/tools/avr/etc/avrdude.conf
 endif
 
-all:	dump-prefs	compile
+ifeq ($(ARDUINO_PORT),)
+	ARDUINO_PORT := /dev/cu.wchusbserial1410
+endif
 
-dump-prefs:	test-env	$(BUILD_DIR)
-	$(ARDUINO_DIR)/arduino-builder -dump-prefs $(ARDUINO_FLAGS) $(SRC)
+all:	compile	upload
 
 compile:	test-env	$(BUILD_DIR)
 	$(ARDUINO_DIR)/arduino-builder -compile $(ARDUINO_FLAGS) $(SRC)
 
 upload:	test-env	test-build
-	$(ARDUINO_DIR)/hardware/tools/avr/bin/avrdude -C $(AVRDUDE_CONF) -v -patmega328p -carduino -P$(AVRDUDE_PORT) -b115200 -D -Uflash:w:$(BUILD_DIR)/$(SRC).hex:i
+	$(ARDUINO_DIR)/hardware/tools/avr/bin/avrdude -C $(ARDUINO_CONF) -v -patmega328p -carduino -P$(ARDUINO_PORT) -b115200 -D -Uflash:w:$(BUILD_DIR)/$(SRC).hex:i
 
 upload-hex:	test-env	test-hex
-	$(ARDUINO_DIR)/hardware/tools/avr/bin/avrdude -C $(AVRDUDE_CONF) -v -patmega328p -carduino -P$(AVRDUDE_PORT) -b115200 -D -Uflash:w:$(hex):i
+	$(ARDUINO_DIR)/hardware/tools/avr/bin/avrdude -C $(ARDUINO_CONF) -v -patmega328p -carduino -P$(ARDUINO_PORT) -b115200 -D -Uflash:w:$(hex):i
+
+dump-prefs:	test-env	$(BUILD_DIR)
+	$(ARDUINO_DIR)/arduino-builder -dump-prefs $(ARDUINO_FLAGS) $(SRC)
 
 test-env:
 	@if [ -z "$(ARDUINO_DIR)" ]; then \
