@@ -3,8 +3,6 @@
 
 #include <MeOrion.h>
 
-#define DEBUG 1
-
 #define MAX_SOUND_STRENGTH 512
 #define MIN_DISTANCE_CM 15.0
 #define SPEED 160
