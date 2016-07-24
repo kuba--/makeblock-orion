@@ -6,6 +6,8 @@ Makeblock Orion is a main control board upgraded and improved for teaching and e
 <img alt="MeOrion" src="https://arduino-elektronika.eu/8673-thickbox/makeblock-me-orionbase-on-arduino-uno.jpg" />
 
 ```sh
+$ export ARDUINO_DIR=<arduino ide dir>
+
 # Dump build preferences for the current project
 $ make dump-prefs
 
