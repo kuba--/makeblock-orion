@@ -6,10 +6,10 @@ If ambient sound exceeds "Max Strength", Robot will stop (or go - depends on the
 
 Video: https://goo.gl/photos/tmdbJKWGunph3VmC9
 
-Compile & Upload
-================
+### Compile & Upload
 ```sh
-# $ARDUINO_DIR is required
+$ export ARDUINO_DIR=<arduino ide dir>
+
 $ make -f ../Makefile compile
 $ make -f ../Makefile upload
 ```
