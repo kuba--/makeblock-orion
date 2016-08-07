@@ -74,3 +74,20 @@ $(BUILD_DIR):
 clean:
 	rm -fr $(BUILD_DIR)
 
+help:
+	@echo 'Usage: make [options...] [target=all]'
+	@echo 'options:'
+	@echo '	debug=0-10  : Turns on debugging messages. The higher, the chattier (default: 0).'
+	@echo '	project="." : The path to the project (default: current directory)'
+	@echo '	hex=""      : The path to the uploadable file.'
+	@echo
+	@echo 'target:'
+	@echo '	compile'
+	@echo '	upload'
+	@echo '	all (compile and upload)'
+	@echo '	dump-prefs'
+	@echo '	test-env'
+	@echo '	test-hex'
+	@echo '	clean'
+	@echo '	help'
+
