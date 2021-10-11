@@ -3,7 +3,7 @@ Arduino Uno scripts for Makeblock Orion board.
 
 Makeblock Orion is a main control board upgraded and improved for teaching and entertainment on the basis of Arduino Uno.
 
-<img alt="MeOrion" src="http://learn.makeblock.com/cn/wp-content/uploads/2016/01/start_0s.jpg" />
+![MeOrion](orion.jpg)
 
 ```sh
 $ export ARDUINO_DIR=<arduino ide dir>
