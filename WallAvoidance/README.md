@@ -1,6 +1,5 @@
 Wall Avoidance
 ==============
-Video: https://goo.gl/photos/KwPkWFexpjApjjhs8
 
 ### Compile & Upload
 ```sh
